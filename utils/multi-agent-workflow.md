@@ -2,303 +2,268 @@
 ####### MULTI AGENTS #####
 ##########################
 
-### Step 1 - Split Tasks
+This workflow demonstrates how to use the multi-agent commands for parallel task execution.
 
-- Make a new document called tasks/parallel-tasks-list.md.
-- Review all of the remaining tasks in @tasks/tasks-prd-climbr-mvp-phase1
-- Reorganize all of the tasks into three separate lists
-- Each list is for an agent running in parallel completing tasks without interfering with the other agent
+## Overview
 
-  - Intent: Create a structured document to organize parallel work
+The multi-agent workflow allows you to distribute tasks across 3-5 specialized agents that work in parallel. This significantly speeds up development while maintaining code quality and avoiding conflicts.
 
-### Step 2 - Generate Agent Prompts
+## Step-by-Step Workflow
 
-Now generate a small and concise prompt for each Agent 1, Agent 2, and Agent 3 so they can understand exactly what they need to do given this new task list.
+### Step 1: Generate PRD (if needed)
 
-Use the following propmt structure for the agent prompts:
+If you don't have a PRD yet, generate one from your design document:
 
-<agent-prompt-structure>
+```bash
+/user:prd:generate design-doc.md
+```
 
-You are Agent <X> responsible for <your-focus-area>. Complete these <X> tasks from @tasks/parallel-tasks-list.md. Use @tasks/ai-dev-tasks/process-task-list.mdc
+### Step 2: Generate Initial Task List
 
-Docs to Reference:
+Generate a comprehensive task list from your PRD:
 
-- `Project Design Doc` : @tasks/project-design-doc.md
-- `Original Task List` : @tasks/tasks-prd-climbr-mvp-phase1.md
-- `Parallel Task List` : @tasks/parallel-tasks-list.md
+```bash
+/user:tasks:generate tasks/project-prd.md
+```
 
-**Tasks:**
+### Step 3: Distribute Tasks to Multiple Agents
 
-**Your focus areas:**
+Use the multi-agent task generator to automatically distribute tasks:
 
-**Key requirements:**
+```bash
+/user:tasks:generate-multi-agent tasks/tasks-list.md --agents 4
+```
 
-**Dependencies:**
+This command will:
+- Analyze the task list and identify optimal groupings
+- Create separate task lists for each agent (e.g., `tasks/agent-1-tasks.md`, `tasks/agent-2-tasks.md`)
+- Generate a coordination file at `tasks/multi-agent-coordination.md`
+- Create agent-specific prompts with clear responsibilities
 
-**Success criteria:**
+### Step 4: Execute Tasks in Parallel
 
-For each task:
+Option A - Deploy all agents at once:
+```bash
+/user:tasks:execute-multi-agent
+```
 
-- Follow the process in @tasks/ai-dev-tasks/process-task-list.mdc
-- Commit after each completed subtask with only the files you've touched
-- Mark tasks complete with [x] as you finish them on both the `Original Task List` & `Parallel Tasks List`
+Option B - Deploy specific agents:
+```bash
+/user:tasks:execute-multi-agent --agents 1,3 --mode parallel
+```
 
-</agent-prompt-structure>
+Option C - Use the deployment command for custom scenarios:
+```bash
+/user:deploy:multiple-agents "Complete the backend API tasks" --from-file design-doc.md
+```
 
-### Step 3 - Initialize Agent on Tasks
+### Step 5: Monitor Progress
 
-#############################################
-####### AGENT INITIAL INSTRUCTIONS ##########
-#############################################
+The coordination file (`tasks/multi-agent-coordination.md`) tracks:
+- Agent status and progress
+- Task dependencies and handoffs
+- Completion percentages
+- Context usage
 
-Take each prompt, and feed it to a separate instance of claude with approving all permissions.
+### Step 6: Continue Interrupted Work
 
-##########################################
-############# CONTINUE TASK ##############
-##########################################
+If an agent stops due to context limits:
 
-### Step 4 - Continue Tasks Prompts | Multiple Agents
+```bash
+# Continue a specific agent
+/user:tasks:continue 2
 
-<continue-prompt>
-- Go back and check off all completed tasks by Agent <X> thus far.
-- Then continue onto the next task for Agent B on @tasks/parallel-tasks-list.md
-- After each subtask is completed, git commit for only the files you've modifies/created
-- Then mark the subtask complete on the tasks file.
-</continue-prompt>
+# Continue all agents in parallel
+/user:tasks:continue-parallel
+```
 
-### Compact Chat History
+### Step 7: Handle Task Reorganization
 
-/compact provide only enough context to understand the main idea of the project and what is needed to complete the next few tasks, and which agent you are.
+If tasks need to be rebalanced between agents:
 
-### When one agent finishes all their tasks
+```bash
+/user:tasks:reorganize tasks/agent-1-tasks.md tasks/agent-2-tasks.md
+```
 
-- Review remaining tasks for Agent B @tasks/parallel-tasks-list.md
-- continue onto the next task for Agent B that won't interfere with Agent B.
-- Move that Item to Agent B's list
-- Then start on that task
-- After each subtask is completed, git commit for only the files you've modifies/created
-- Then Repeat the process
+### Step 8: Mark Tasks Complete
 
-### PYTHON SERVICE
+When all agents finish their work:
 
-- First Review @tasks/parallel-task-list
-- Then, Let's make a few updates to the application as follows
+```bash
+/user:tasks-mark-complete
+```
 
-  - Now that you know what the task list file looks like, update our application to better fit that format for keeping track of tasks completed.
+### Step 9: Commit All Changes
 
-  - The application should start and focus on just a single instance of claude. I will start up three separate terminals with the application running for each agent, instead of one application running three instances of Claude. Here is a sample initial prompt:
-    <initial-prompt>
-    You are Agent 1 responsible for Search & Discovery Features. Complete these 5 tasks from @tasks/parallel-tasks-list.md. Use @tasks/ai-dev-tasks/process-task-list.mdc
+```bash
+/user:tasks-commit
+```
 
-    Docs to Reference:
+### Step 10: Review and Iterate
 
-    - `Project Design Doc` : @tasks/product-design-doc.md
-    - `Original Task List` : @tasks/tasks-prd-climbr-mvp-phase1.md
-    - `Parallel Task List` : @tasks/parallel-tasks-list.md
+After completion, review the work and generate next iteration:
 
-    **Tasks:**
+```bash
+/user:prd:iterate-project --mode improve
+```
 
-    - 3.1 Create search filters for location, skill level, and preferences
-    - 3.2 Implement geospatial queries using PostGIS
-    - 3.3 Build advanced search with multiple filter combinations
-    - 3.4 Add search result pagination (20 results per page)
-    - 3.5 Implement saved search preferences functionality
+## Agent Prompt Structure
 
-    **Your focus areas:**
+When agents are created, they receive structured prompts like:
 
-    - Partner search functionality in backend/matching/
-    - Geospatial queries with PostGIS
-    - Search optimization and filtering
+```markdown
+You are Agent {N} responsible for {focus-area}. Complete these {X} tasks from @tasks/agent-{N}-tasks.md.
 
-    **Key requirements:**
+**Coordination File**: @tasks/multi-agent-coordination.md
 
-    - Use descriptive class/method names (e.g., LocationRadiusFilter, find_climbers_within_radius)
-    - Implement clear pagination with has_next_page, total_results_count
-    - Create SavedSearch model with clear field names
-
-    **Dependencies:**
-
-    - Django models and PostGIS already configured
-    - User and ClimbingProfile models exist
-    - No dependencies on other agents
-
-    **Success criteria:**
-
-    - All search filters work with clear parameter names
-    - Geospatial queries use proper PostGIS methods
-    - Pagination returns exactly 20 results per page
-    - Users can save and load search preferences
-
-    For each task:
-
-    - Follow the process in @tasks/ai-dev-tasks/process-task-list.mdc
-    - Commit after each completed subtask with only the files you've touched
-    - Mark tasks complete with [x] as you finish them on both the `Original Task List` & `Parallel Tasks 
-  List`
-      </initial-prompt>
-
-  - Everytime Claude finishes and returns a response, we should restart claude code with the prompt of:
-    <continue-prompt>
-    - Go back and check off all completed tasks by Agent 2 thus far.
-    - Then continue onto the next task for Agent 2 on @tasks/parallel-tasks-list.md
-    - After each subtask is completed, git commit for only the files you've modifies/created
-    - Then mark the subtask complete on the tasks file.
-      </continue-prompt>
-
-<initial-prompt>
-  You are Agent 1 responsible for Search & Discovery Features. Complete these 5 tasks from @tasks/parallel-tasks-list.md. Use @tasks/ai-dev-tasks/process-task-list.mdc
-
-Docs to Reference:
-
-- `Project Design Doc` : @tasks/product-design-doc.md
-- `Original Task List` : @tasks/tasks-prd-climbr-mvp-phase1.md
-- `Parallel Task List` : @tasks/parallel-tasks-list.md
+**Docs to Reference:**
+- Project Design Doc: @{design-doc-path}
+- Original PRD: @{prd-path}
+- Your Task List: @tasks/agent-{N}-tasks.md
 
 **Tasks:**
-
-- 3.1 Create search filters for location, skill level, and preferences
-- 3.2 Implement geospatial queries using PostGIS
-- 3.3 Build advanced search with multiple filter combinations
-- 3.4 Add search result pagination (20 results per page)
-- 3.5 Implement saved search preferences functionality
+{task-list}
 
 **Your focus areas:**
-
-- Partner search functionality in backend/matching/
-- Geospatial queries with PostGIS
-- Search optimization and filtering
+{focus-areas}
 
 **Key requirements:**
-
-- Use descriptive class/method names (e.g., LocationRadiusFilter, find_climbers_within_radius)
-- Implement clear pagination with has_next_page, total_results_count
-- Create SavedSearch model with clear field names
+{requirements}
 
 **Dependencies:**
-
-- Django models and PostGIS already configured
-- User and ClimbingProfile models exist
-- No dependencies on other agents
+{dependencies}
 
 **Success criteria:**
-
-- All search filters work with clear parameter names
-- Geospatial queries use proper PostGIS methods
-- Pagination returns exactly 20 results per page
-- Users can save and load search preferences
+{success-criteria}
 
 For each task:
-
 - Follow the process in @tasks/ai-dev-tasks/process-task-list.mdc
-- Commit after each completed subtask with only the files you've touched
-- Mark tasks complete with [x] as you finish them on both the `Original Task List` & `Parallel Tasks 
-  List`
-  </initial-prompt>
+- Update coordination file when starting/completing tasks
+- Commit after each completed subtask
+- Mark tasks complete with [x] in your task list
+- Check coordination file for handoffs from other agents
+```
 
-⏺ Agent 2 Prompt: AI & Matching System
+## Coordination File Format
 
-You are Agent 2 responsible for AI & Matching System. Complete these 8 tasks from
-@tasks/parallel-tasks-list.md. Use @tasks/ai-dev-tasks/process-task-list.mdc
+The multi-agent coordination file tracks:
 
-Docs to Reference:
+```markdown
+# Multi-Agent Task Coordination
 
-- `Project Design Doc` : @tasks/product-design-doc.md
-- `Original Task List` : @tasks/tasks-prd-climbr-mvp-phase1.md
-- `Parallel Task List` : @tasks/parallel-tasks-list.md
+## Agent Status
+- Agent 1: Active (65% complete, 45% context used)
+- Agent 2: Waiting (80% complete, 78% context used)
+- Agent 3: Active (50% complete, 30% context used)
 
-**Tasks:**
+## Task Dependencies
+- Agent 2 waiting for Agent 1 to complete API endpoints
+- Agent 3 can proceed independently
 
-- 4.1 Integrate OpenAI API for natural language search processing
-- 4.2 Develop compatibility scoring algorithm considering grades, styles, location
-- 4.3 Implement daily partner suggestion system (3-5 matches)
-- 4.4 Create feedback system for AI suggestions (thumbs up/down)
-- 4.5 Build learning mechanism to improve suggestions from feedback
-- 4.6 Add transparent explanation for why partners are suggested
-- 4.7 Implement fallback to traditional search if AI fails
-- 4.8 Create Celery tasks for async AI processing
+## Handoffs
+- [ ] Agent 1 → Agent 2: API endpoint definitions
+- [x] Agent 1 → Agent 3: Database models completed
 
-**Your focus areas:**
+## Progress Summary
+Total Tasks: 45
+Completed: 28 (62%)
+In Progress: 7
+Blocked: 2
+Remaining: 8
+```
 
-- AI integration in backend/ai_services/
-- Compatibility scoring algorithms
-- Matching suggestion system
-- Asynchronous task processing with Celery
+## Best Practices
 
-**Key requirements:**
+1. **Optimal Agent Count**: Use 3-5 agents for best results
+2. **Task Distribution**: Let the system analyze and distribute tasks automatically
+3. **Dependency Management**: The coordination file prevents conflicts
+4. **Context Management**: Agents automatically pause at 80% context usage
+5. **Atomic Commits**: Each subtask completion triggers a git commit
+6. **Progress Tracking**: All task lists are updated in real-time
 
-- Create NaturalLanguageSearchParser with descriptive methods
-- Build CompatibilityScorer with clear weight constants (LOCATION_WEIGHT, SKILL_MATCH_WEIGHT)
-- Generate 3-5 daily partner suggestions
-- Implement thumbs up/down feedback with learning mechanism
+## Troubleshooting
 
-**Dependencies:**
+### If only one agent was running:
+```bash
+/user:parallel-persist
+```
 
-- User and ClimbingProfile models exist
-- Celery and Redis already configured
-- No dependencies on other agents' work
+### If tasks need redistribution:
+```bash
+/user:tasks:reorganize tasks/agent-1-tasks.md tasks/agent-2-tasks.md
+```
 
-**Success criteria:**
+### To review all agent progress:
+```bash
+# Check coordination file
+cat tasks/multi-agent-coordination.md
 
-- OpenAI API processes natural language queries
-- Compatibility scores are transparent and explainable
-- Daily suggestions are personalized and improving
-- Fallback to traditional search works seamlessly
+# Check individual agent task lists
+ls tasks/agent-*-tasks.md
+```
 
-For each task:
+## Advanced Usage
 
-- Follow the process in @tasks/ai-dev-tasks/process-task-list.mdc
-- Commit after each completed subtask with only the files you've touched
-- Mark tasks complete with [x] as you finish them on both the `Original Task List` & `Parallel Tasks
-List`
+### Custom Agent Deployment
 
-⏺ Agent 3 Prompt: Messaging & Frontend
+For specialized scenarios:
 
-You are Agent 3 responsible for Messaging & Frontend. Complete these 17 tasks from
-@tasks/parallel-tasks-list.md. Use @tasks/ai-dev-tasks/process-task-list.mdc
+```bash
+/user:deploy:multiple-agents "Create 3 agents to review and optimize each microservice" \
+  --from-file architecture.md \
+  --coordination-file tasks/optimization-coordination.md
+```
 
-Docs to Reference:
+### Project DevOps Review
 
-- `Project Design Doc` : @tasks/product-design-doc.md
-- `Original Task List` : @tasks/tasks-prd-climbr-mvp-phase1.md
-- `Parallel Task List` : @tasks/parallel-tasks-list.md
+Deploy agents to review different aspects of the project:
 
-**Tasks:**
+```bash
+/user:project-devops
+```
 
-- 5.1-5.6: Complete messaging system (DirectMessage model, real-time messaging, notifications,
-  content filtering, blocking)
-- 6.1-6.10: Build entire frontend (React setup, Tailwind CSS, auth components, profile UI, search UI,
-  messaging UI, responsive design)
+This creates agents to:
+- Review and update README
+- Analyze codebase structure
+- Review and improve tests
+- Generate development environment setup
 
-**Your focus areas:**
+## Example Complete Workflow
 
-- Direct messaging system in backend/messaging/
-- Real-time WebSocket communication with Django Channels
-- Complete React frontend with TypeScript
-- GraphQL integration with Apollo Client
+```bash
+# 1. Generate PRD from design
+/user:prd:generate design.md references/api-spec.md
 
-**Key requirements:**
+# 2. Generate comprehensive task list
+/user:tasks:generate
 
-- Create DirectMessage model with clear methods (mark_as_read, is_read_by_recipient)
-- Implement WebSocket events ('message.new', 'message.read', 'user.typing')
-- Build responsive React components with Tailwind CSS
-- Use descriptive component names (LoginForm, PartnerSuggestionCard)
+# 3. Distribute to 4 agents
+/user:tasks:generate-multi-agent tasks/tasks-list.md --agents 4
 
-**Dependencies:**
+# 4. Execute all agents in parallel
+/user:tasks:execute-multi-agent
 
-- Django Channels already configured
-- User and ClimbingProfile models exist
-- Coordinate with Agent 1 for search UI integration
+# 5. Monitor progress (in another terminal)
+watch cat tasks/multi-agent-coordination.md
 
-**Success criteria:**
+# 6. Continue any stopped agents
+/user:tasks:continue-parallel
 
-- Real-time messaging works with read receipts
-- Frontend is fully responsive (mobile, tablet, desktop)
-- All components have proper loading states and error handling
-- GraphQL types are properly generated
+# 7. Mark all complete
+/user:tasks-mark-complete
 
-For each task:
+# 8. Commit everything
+/user:tasks-commit
 
-- Follow the process in @tasks/ai-dev-tasks/process-task-list.mdc
-- Commit after each completed subtask with only the files you've touched
-- Mark tasks complete with [x] as you finish them on both the `Original Task List` & `Parallel Tasks 
-List`
+# 9. Generate next iteration
+/user:prd:iterate-project --mode next-phase
+```
+
+## Key Differences from Manual Approach
+
+1. **Automated Distribution**: No manual task splitting required
+2. **Smart Coordination**: Built-in dependency tracking
+3. **Parallel Execution**: Single command deploys all agents
+4. **Progress Tracking**: Centralized coordination file
+5. **Resume Capability**: Easy continuation of interrupted work
+6. **Conflict Prevention**: Agents avoid working on same files

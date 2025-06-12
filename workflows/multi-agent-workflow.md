@@ -1,10 +1,10 @@
 # Multi-Agent Workflow Example
 
-This example demonstrates how to use multiple Claude agents in parallel for larger projects.
+This example demonstrates how to use the updated multi-agent commands for parallel development of larger projects.
 
 ## Scenario
 
-You're building a web application with frontend, backend, database, and testing components. Using multiple agents allows parallel development of these components.
+You're building a web application with frontend, backend, database, and testing components. Using multiple agents allows parallel development of these components with automatic coordination.
 
 ## Step 1: Create Comprehensive Design Document
 
@@ -59,247 +59,294 @@ Save as `ecommerce-design.md`.
 ## Step 2: Generate PRD and Initial Tasks
 
 ```bash
-# Generate PRD
-/user:generate-prd ecommerce-design.md
+# Generate PRD from design document
+/user:prd:generate ecommerce-design.md
 
-# Generate single-agent task list first
-/user:generate-tasks
-# Review and type "Go"
+# Generate comprehensive task list from PRD
+/user:tasks:generate tasks/project-prd.md
 ```
 
 ## Step 3: Distribute Tasks to Multiple Agents
 
 ```bash
-# Generate multi-agent task distribution
-/user:generate-multi-agent-tasks
+# Automatically distribute tasks across 4 agents
+/user:tasks:generate-multi-agent tasks/tasks-list.md --agents 4
 ```
 
 This creates:
-- `tasks/agent-1-tasks.md` - Frontend tasks
-- `tasks/agent-2-tasks.md` - Backend tasks
-- `tasks/agent-3-tasks.md` - Database tasks
-- `tasks/agent-4-tasks.md` - Testing tasks
-- `tasks/multi-agent-coordination.md` - Coordination info
+- `tasks/agent-1-tasks.md` - Frontend development tasks
+- `tasks/agent-2-tasks.md` - Backend API tasks
+- `tasks/agent-3-tasks.md` - Database and infrastructure tasks
+- `tasks/agent-4-tasks.md` - Testing and DevOps tasks
+- `tasks/multi-agent-coordination.md` - Central coordination file
 
 ## Step 4: Review Task Distribution
 
 ```bash
-# Check task distribution
+# Check task distribution for each agent
 for i in {1..4}; do
-    echo "=== Agent $i ==="
+    echo "=== Agent $i Tasks ==="
     head -20 tasks/agent-$i-tasks.md
     echo ""
 done
 
-# Review coordination file
+# Review coordination and dependencies
 cat tasks/multi-agent-coordination.md
 ```
 
-## Step 5: Reorganize Tasks if Needed
-
-If the distribution seems unbalanced:
+## Step 5: Execute with Multiple Agents
 
 ```bash
-# Move 3 tasks from agent 1 to agent 2
-/user:reorganize-tasks from=1 to=2 count=3
-
-# Move specific task types
-/user:reorganize-tasks from=3 to=4 pattern="test"
+# Launch all agents in parallel
+/user:tasks:execute-multi-agent
 ```
 
-## Step 6: Execute with Multiple Agents
+This automatically:
+1. Analyzes task dependencies
+2. Generates specialized prompts for each agent
+3. Creates coordination tracking
+4. Deploys all agents simultaneously
+5. Monitors progress and context usage
+
+Alternative execution options:
 
 ```bash
-# Launch multi-agent execution
-/user:execute-multi-agent-tasks max-agents=4
+# Deploy specific agents only
+/user:tasks:execute-multi-agent --agents 1,3 --mode parallel
+
+# Custom deployment for specialized scenarios
+/user:deploy:multiple-agents "Build e-commerce platform components" --from-file ecommerce-design.md
 ```
 
-This will:
-1. Generate prompts for each agent
-2. Display instructions for launching new Claude instances
-3. Create context files for each agent
-4. Update the coordination file
-
-## Step 7: Launch Additional Claude Instances
-
-For each agent (2-4), open a new terminal and:
+## Step 6: Monitor Progress
 
 ```bash
-# Agent 2
-claude --no-conversation-history
-# Paste the generated prompt for Agent 2
+# Check real-time progress of all agents
+cat tasks/multi-agent-coordination.md
 
-# Agent 3  
-claude --no-conversation-history
-# Paste the generated prompt for Agent 3
+# Monitor specific agent progress
+cat tasks/agent-1-tasks.md | grep -c "\[x\]"
 
-# Agent 4
-claude --no-conversation-history
-# Paste the generated prompt for Agent 4
+# Watch progress continuously
+watch cat tasks/multi-agent-coordination.md
 ```
 
-## Step 8: Monitor Progress
+## Step 7: Handle Interruptions and Dependencies
 
-In the main terminal:
+If an agent stops due to context limits or dependencies:
 
 ```bash
-# Check overall progress
-/user:check-progress
+# Continue a specific agent
+/user:tasks:continue 2
 
-# View specific agent status
-grep -c "\[x\]" tasks/agent-*-tasks.md
+# Continue all stopped agents
+/user:tasks:continue-parallel
 
-# Check coordination status
-tail -20 tasks/multi-agent-coordination.md
+# Reorganize tasks if needed
+/user:tasks:reorganize tasks/agent-1-tasks.md tasks/agent-3-tasks.md
 ```
 
-## Step 9: Handle Dependencies
-
-When an agent is blocked:
+## Step 8: Complete the Project
 
 ```bash
-# Agent 2 needs schema from Agent 3
-# In Agent 3's terminal, ensure schema task is complete
-# Then in Agent 2's terminal:
-/user:continue-tasks 2
+# Mark all agents' work as complete
+/user:tasks-mark-complete
+
+# Commit all changes
+/user:tasks-commit
+
+# Generate next iteration if needed
+/user:prd:iterate-project --mode next-phase
 ```
 
-## Step 10: Reassign Tasks from Completed Agents
-
-When an agent finishes early:
+## Complete Workflow Example
 
 ```bash
-# If Agent 3 completes all tasks
-/user:reorganize-tasks from=1 to=3 remaining=true
-
-# Agent 3 can now help Agent 1
-```
-
-## Complete Multi-Agent Session
-
-```bash
-# Terminal 1 (Main/Agent 1)
+# Set up project
 mkdir ecommerce-platform
 cd ecommerce-platform
 git init
 
-# Create design
+# Create design document
 cat > ecommerce-design.md << 'EOF'
+# E-Commerce Platform Design
 [... design content ...]
 EOF
 
-# Generate PRD and tasks
-/user:generate-prd ecommerce-design.md
-/user:generate-tasks
-# Type "Go"
+# Execute complete multi-agent workflow
+/user:prd:generate ecommerce-design.md
+/user:tasks:generate
+/user:tasks:generate-multi-agent tasks/tasks-list.md --agents 4
+/user:tasks:execute-multi-agent
 
-# Distribute to agents
-/user:generate-multi-agent-tasks
+# Monitor in another terminal
+watch cat tasks/multi-agent-coordination.md
 
-# Review distribution
-cat tasks/multi-agent-coordination.md
+# Handle any interruptions
+/user:tasks:continue-parallel
 
-# Start execution
-/user:execute-multi-agent-tasks max-agents=4
-
-# Terminal 2 (Agent 2)
-cd ecommerce-platform
-claude --no-conversation-history
-# Paste Agent 2 prompt
-
-# Terminal 3 (Agent 3)
-cd ecommerce-platform
-claude --no-conversation-history
-# Paste Agent 3 prompt
-
-# Terminal 4 (Agent 4)
-cd ecommerce-platform
-claude --no-conversation-history
-# Paste Agent 4 prompt
+# Complete the project
+/user:tasks-mark-complete
+/user:tasks-commit
 ```
 
 ## Coordination File Example
 
+The system automatically maintains a coordination file like this:
+
 ```markdown
-# Multi-Agent Coordination
+# Multi-Agent Task Coordination
 
-## Current Status - [timestamp]
+## Agent Status - 2024-01-15 14:30:00
+- Agent 1: Active (Frontend) - 8/12 tasks complete (65%), 45% context used
+- Agent 2: Active (Backend) - 6/10 tasks complete (60%), 52% context used  
+- Agent 3: Waiting (Database) - 7/8 tasks complete (87%), 78% context used
+- Agent 4: Active (Testing) - 3/9 tasks complete (33%), 25% context used
 
-### Agent 1 - Frontend Development
-- Status: In Progress
-- Current Task: Implementing product listing component
-- Completed: 5/12 tasks
-- Blocked: No
+## Task Dependencies
+- Agent 2 waiting for Agent 3 to complete database migrations
+- Agent 4 waiting for Agent 1 to complete component library
+- No other blockers
 
-### Agent 2 - Backend Development
-- Status: In Progress
-- Current Task: Setting up Express routes
-- Completed: 3/10 tasks
-- Blocked: Waiting for database schema from Agent 3
+## Recent Handoffs
+- [x] Agent 3 → Agent 2: Database schema completed
+- [x] Agent 1 → Agent 4: Core components ready for testing
+- [ ] Agent 2 → Agent 4: API endpoints for integration tests
 
-### Agent 3 - Database & Infrastructure
-- Status: In Progress
-- Current Task: Creating PostgreSQL schema
-- Completed: 4/8 tasks
-- Blocked: No
+## Progress Summary
+Total Tasks: 39
+Completed: 24 (62%)
+In Progress: 8
+Blocked: 2
+Remaining: 5
 
-### Agent 4 - Testing & Documentation
-- Status: Waiting
-- Current Task: Waiting for components to test
-- Completed: 1/9 tasks
-- Blocked: Needs components from Agents 1 and 2
-
-## Dependencies
-- Agent 2 waiting on Agent 3 for schema (Task 3.2)
-- Agent 4 waiting on Agent 1 for components (Task 1.3)
-- Agent 4 waiting on Agent 2 for API endpoints (Task 2.4)
+## Next Actions
+- Agent 3 approaching context limit - may need continuation
+- Agent 4 can proceed with component testing
+- Agent 2 ready to continue once migration completes
 ```
 
-## Tips for Multi-Agent Success
+## Advanced Multi-Agent Features
 
-1. **Clear Boundaries**: Ensure agents have well-defined, non-overlapping responsibilities
-2. **Communication**: Use the coordination file for status updates
-3. **Dependencies**: Identify and communicate blockers early
-4. **Rebalancing**: Reassign tasks as agents complete their work
-5. **Context Management**: Monitor context usage per agent
+### Project DevOps Review
+Deploy specialized agents to review your entire project:
 
-## Common Multi-Agent Commands
+```bash
+/user:project-devops
+```
+
+Creates agents to:
+- Review and improve README
+- Analyze codebase architecture  
+- Review and enhance tests
+- Generate development environment setup
+
+### Custom Agent Deployment
+For specialized scenarios:
+
+```bash
+/user:deploy:multiple-agents "Optimize performance across all microservices" \
+  --from-file architecture.md \
+  --coordination-file tasks/optimization-coordination.md
+```
+
+### Parallel Task Deployment
+Quick deployment for specific work:
+
+```bash
+/user:deploy:parallel-tasks "Add real-time features to the platform" \
+  --from-file realtime-requirements.md
+```
+
+## Best Practices for Multi-Agent Success
+
+### 1. Optimal Agent Distribution
+- **3 agents**: Small to medium projects
+- **4 agents**: Most full-stack applications (recommended)
+- **5 agents**: Complex projects with multiple domains
+
+### 2. Task Organization
+- Let the system analyze and distribute tasks automatically
+- The AI understands dependencies better than manual distribution
+- Each agent gets cohesive, related tasks
+
+### 3. Monitoring and Coordination
+- Check coordination file regularly for status updates
+- Don't interrupt agents unless they've stopped
+- Use continuation commands when agents pause
+
+### 4. Dependency Management
+- The system automatically handles most dependencies
+- Agents know when to wait for prerequisites
+- Handoffs are tracked in the coordination file
+
+## Troubleshooting Common Issues
+
+### Agent Context Overflow
+```bash
+# System automatically pauses agents at 80% context
+/user:tasks:continue 2  # Continue specific agent
+/user:tasks:continue-parallel  # Continue all stopped agents
+```
+
+### Unbalanced Task Distribution
+```bash
+# Move tasks between agents
+/user:tasks:reorganize tasks/agent-1-tasks.md tasks/agent-3-tasks.md
+```
+
+### Only One Agent Running
+```bash
+# Correct parallel execution state
+/user:parallel-persist
+```
+
+### Checking Agent Progress
+```bash
+# List all agent task files
+ls tasks/agent-*-tasks.md
+
+# Check completion counts
+grep -c "\[x\]" tasks/agent-*-tasks.md
+
+# Review coordination status
+tail -20 tasks/multi-agent-coordination.md
+```
+
+## Updated Command Reference
 
 | Command | Purpose |
 |---------|---------|
-| `/user:generate-multi-agent-tasks` | Distribute tasks to agents |
-| `/user:reorganize-tasks from=1 to=2` | Move tasks between agents |
-| `/user:execute-multi-agent-tasks` | Start parallel execution |
-| `/user:check-progress` | Monitor all agents |
-| `/user:continue-tasks 2` | Resume specific agent |
+| `/user:prd:generate` | Generate PRD from design document |
+| `/user:tasks:generate` | Create comprehensive task list |
+| `/user:tasks:generate-multi-agent` | Distribute tasks to agents |
+| `/user:tasks:execute-multi-agent` | Deploy all agents in parallel |
+| `/user:tasks:continue` | Resume specific agent |
+| `/user:tasks:continue-parallel` | Resume all stopped agents |
+| `/user:tasks:reorganize` | Rebalance tasks between agents |
+| `/user:deploy:multiple-agents` | Custom agent deployment |
+| `/user:deploy:parallel-tasks` | Quick parallel deployment |
+| `/user:project-devops` | Deploy DevOps review agents |
+| `/user:tasks-mark-complete` | Mark all work complete |
+| `/user:tasks-commit` | Commit all changes |
+| `/user:prd:iterate-project` | Generate next iteration |
 
-## Handling Common Issues
+## Key Improvements Over Manual Approach
 
-### Agent Blocked on Dependency
-```bash
-# Check dependency status
-grep -A5 "Blocked:" tasks/multi-agent-coordination.md
-
-# In the blocking agent's terminal
-# Complete the required task, then update coordination file
-```
-
-### Context Overflow
-```bash
-# If an agent approaches context limit
-/user:continue-tasks 2  # This will suggest spawning a sub-agent
-```
-
-### Merge Conflicts
-```bash
-# If agents modify the same file
-git status  # Check conflicts
-git merge --no-ff agent-2-branch
-# Resolve conflicts manually
-```
+1. **Automated Coordination**: No manual prompt generation or agent management
+2. **Smart Distribution**: AI analyzes tasks and creates optimal groupings
+3. **Dependency Tracking**: Built-in understanding of task prerequisites
+4. **Progress Monitoring**: Real-time tracking of all agents
+5. **Easy Continuation**: Simple commands to resume interrupted work
+6. **Conflict Prevention**: Agents automatically avoid file conflicts
+7. **Context Management**: Automatic pausing and resumption at context limits
 
 ## Next Steps
 
-- [Complex Project Management](complex-project.md) for enterprise-scale projects
-- [Continuous Integration](ci-integration.md) for automated workflows
-- [Performance Optimization](performance-tuning.md) for large teams
+After completing your multi-agent project:
+
+- Use `/user:prd:iterate-project` to plan the next development phase
+- Deploy `/user:project-devops` to review and optimize the entire project
+- Consider the workflow for your next project using lessons learned
+
+The multi-agent system transforms development from sequential task execution to coordinated parallel development, dramatically improving both speed and quality.

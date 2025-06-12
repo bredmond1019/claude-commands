@@ -59,9 +59,15 @@ The generated task list _must_ follow this structure:
 
 - [ ] 1.0 Parent Task Title
   - [ ] 1.1 [Sub-task description 1.1]
+    - [ ] 1.1.1 [Sub-task description 1.1.1]
+    - [ ] 1.1.2 [Sub-task description 1.1.2]
   - [ ] 1.2 [Sub-task description 1.2]
+    - [ ] 1.2.1 [Sub-task description 1.2.1]
+    - [ ] 1.2.2 [Sub-task description 1.2.2]
 - [ ] 2.0 Parent Task Title
   - [ ] 2.1 [Sub-task description 2.1]
+    - [ ] 2.1.1 [Sub-task description 2.1.1]
+    - [ ] 2.1.2 [Sub-task description 2.1.2]
 - [ ] 3.0 Parent Task Title (may not require sub-tasks if purely structural or configuration)
 ```
 
