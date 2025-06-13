@@ -4,10 +4,14 @@
 
 This command will deploy multiple agents to work in parallel to review the project's README.md, codebase, and tests to make sure everything is in order. Then generate development environment setup instructions.
 
+## Arguments
+
+- `--prompt <prompt>`: Any additional prompt to add to the agents.
+
 ## Usage
 
 ```
-/user:project-devops
+/user:project-devops --prompt "Add a new feature to the project"
 ```
 
 ## Process
@@ -19,6 +23,7 @@ This command will deploy multiple agents to work in parallel to review the proje
 - That all the logic is sound and we don't have any stubbed functions
 - Update/Create clear documentation for development env setup, and then you run through it and make sure it works.
 - Review the amount of tests, and amount of passing tests.
+- If no README.md, create one after going through the codebase.
 
 **Parallel Execution Management:**
 Deploy multiple Sub Agents to generate agents in parallel for maximum efficiency and creative

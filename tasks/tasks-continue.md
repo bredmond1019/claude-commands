@@ -4,14 +4,15 @@ Resume an interrupted workflow from a saved agent context, continuing from the l
 
 ## Arguments
 
-- `agent-id` (optional): The agent identifier to resume (e.g., "1", "2", "3", "4"). If not provided, attempts to detect from current context.
-- `task-file` (optional): Path to the specific task file to resume. Defaults to `tasks/agent-{id}-tasks.md`.
-- `context-file` (optional): Path to the agent context file. Defaults to `tasks/agent-contexts/agent-{id}-context.md`.
+- `--prompt <prompt>`: Any additional prompt to add to the agents.
+- `--agent-id <agent-id>` (optional): The agent identifier to resume (e.g., "1", "2", "3", "4"). If not provided, attempts to detect from current context.
+- `--from-file <task-file>` (optional): Path to the specific task file to resume. Defaults to `tasks/agent-{id}-tasks.md`.
+- `--context-file <context-file>` (optional): Path to the agent context file. Defaults to `tasks/agent-contexts/agent-{id}-context.md`.
 
 ## Usage
 
 ```bash
-/user:tasks:continue 2
+/user:tasks:continue --prompt "Add a new feature to the project"
 /user:tasks:continue agent-id=3 task-file=tasks/custom-tasks.md
 /user:tasks:continue context-file=tasks/agent-contexts/saved-context.md
 ```

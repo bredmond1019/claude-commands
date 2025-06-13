@@ -5,12 +5,12 @@ Deploy multiple agents to work in parallel to generate a detailed task list.
 ## Usage
 
 ```
-/user:deploy:multiple-agents <prompt> [--from-file <path>]
+/user:deploy:multiple-agents --prompt <prompt> [--from-file <path>]
 ```
 
 ## Arguments
 
-- `<prompt>`: Prompt describing the task for the agents that will be generated (required)
+- `--prompt <prompt>`: Prompt describing the task for the agents that will be generated (required)
 - `--from-file <path>`: Path to the main design document (optional)
 - `--coordination-file <path>`: Path to the coordination file (optional)
 
