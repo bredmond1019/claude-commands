@@ -1,4 +1,4 @@
-# Tasks Mark Complete
+# /user:tasks-mark-complete [--prompt <prompt>]
 
 ## Description
 

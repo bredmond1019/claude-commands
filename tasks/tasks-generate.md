@@ -1,4 +1,4 @@
-# Generate Tasks Command
+# /user:tasks:generate [prd-file-path] [--from-file <path>]
 
 Generate a detailed task list from an existing Product Requirements Document (PRD).
 

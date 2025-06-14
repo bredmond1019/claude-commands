@@ -1,4 +1,4 @@
-# Reorganize Tasks Command
+# /user:tasks:reorganize <source-list> [target-list] [options]
 
 Reorganize and rebalance tasks between agents or within a single task list.
 

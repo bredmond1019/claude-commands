@@ -1,4 +1,4 @@
-# Deploy Multiple Agents Command
+# /user:deploy:multiple-agents --prompt <prompt> [--from-file <path>] [--coordination-file <path>]
 
 Deploy multiple agents to work in parallel to generate a detailed task list.
 

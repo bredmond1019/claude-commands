@@ -1,4 +1,4 @@
-# Tasks Commit
+# /user:tasks-commit [--prompt <prompt>]
 
 ## Description
 

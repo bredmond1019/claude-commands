@@ -1,4 +1,4 @@
-# continue-tasks
+# /user:tasks:continue [--prompt <prompt>] [--agent-id <agent-id>] [--from-file <task-file>] [--context-file <context-file>]
 
 Resume an interrupted workflow from a saved agent context, continuing from the last completed task.
 

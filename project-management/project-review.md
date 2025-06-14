@@ -1,4 +1,4 @@
-# iterate-project
+# /user:prd:iterate-project [--prompt <text>] [--prd-file <path>] [--output-prd <path>] [--mode <mode>] [--feedback-file <path>]
 
 Deploy multiple agents to work in parallel to generate a detailed task list. Analyze completed work against the PRD and generate next iteration of improvements or features.
 

@@ -1,4 +1,4 @@
-# /user:generate-multi-agent-tasks
+# Generate Multi-Agent Tasks <task-list-file> [--agents <number>] [--output-dir <path>]
 
 # Generating Multi-Agent Task Distribution from a Completed Task List
 

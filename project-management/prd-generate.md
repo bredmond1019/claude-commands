@@ -1,4 +1,4 @@
-# Generate PRD Command
+# /user:prd:generate <design-doc-path> [reference-files...]
 
 Generate a Product Requirements Document (PRD) from design documents with optional Q&A interaction.
 

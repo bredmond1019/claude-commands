@@ -1,4 +1,4 @@
-# /user:execute-multi-agent-tasks
+# /user:tasks:execute-multi-agent [--coordination-file <path>] [--agents <list>] [--mode <mode>]
 
 Execute tasks in parallel across multiple Claude agents based on task distribution.
 

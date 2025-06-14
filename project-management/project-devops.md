@@ -1,4 +1,4 @@
-# Project DevOps
+# /user:project-devops [--prompt <prompt>]
 
 ## Description
 

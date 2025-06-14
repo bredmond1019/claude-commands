@@ -1,4 +1,4 @@
-# Deploy Parallel Tasks Command
+# /user:deploy:parallel-tasks <prompt> [--from-file <path>]
 
 Deploy multiple agents to work in parallel to generate a detailed task list.
 

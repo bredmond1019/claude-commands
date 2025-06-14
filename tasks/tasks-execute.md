@@ -1,4 +1,4 @@
-# /user:execute-tasks
+# /user:tasks:execute <task-list-file> [--start-from <task-id>] [--context-limit <percentage>]
 
 Execute tasks from a task list file with automatic progress tracking and git commits.
 
@@ -18,7 +18,7 @@ Execute tasks from a task list file with automatic progress tracking and git com
 
 1. **Parse Task List**: Read and parse the markdown task list to extract all tasks
 2. **Find Starting Point**: Identify uncompleted tasks or start from specified task
-3. **Execute Tasks**: Work through tasks sequentially, updating checkboxes as completed
+3. **Execute Tasks**: Work through tasks sequentially using the TaskTool, updating checkboxes as completed
 4. **Git Commits**: Automatically commit after each subtask completion
 5. **Context Monitoring**: Track context usage and warn when approaching limits
 6. **Progress Updates**: Update task file with completion markers in real-time
@@ -175,6 +175,7 @@ When used in multi-agent scenarios:
 ## Notes
 
 - Tasks are executed in order, respecting dependencies
+- All Tasks should be run using the TaskTool.
 - Parent tasks are marked complete only after all subtasks finish
 - Files are saved after each task to preserve progress
 - Context monitoring helps prevent mid-task interruptions
