@@ -2,9 +2,41 @@
 
 # Test Driven Development
 
+## Arguments
+
+- `[--prompt <prompt>]`: Any additional prompt to add to this prompt.
+- `[--from-file <file>]`: The design doc file or extra instructions/information to add to the context.
+- `[--auto-continue]`: If set, the agent will automatically continue to the next step when the current step is complete.
+
+## Usage
+
+```bash
+/system-prompt --prompt "Add a new feature to the project" --from-file "tasks/project-design-doc.md"
+```
+
 # INSTRUCTIONS
 
-Always follow the instructions in plan.md. When I say "go", find the next unmarked test in plan.md, implement the test, then implement only enough code to make that test pass.
+1. Find/Create `tasks/plan.md`, this will be our main plan for the project.
+2. Our project design doc is in `tasks/project-design-doc.md`, and/or the `--from-file` argument. We will also go back and reference this periodically to ensure we are on track. If none was given, we will create a new one that summarizes the project and goals and update it as we go along.
+3. One the `tasks/plan.md` is created, we will start by writing a failing test for a small part of the feature.
+4. We will then implement the bare minimum to make it pass.
+5. We will then run tests to confirm they pass (Green).
+6. We will then make any necessary structural changes (Tidy First), running tests after each change.
+7. We will then commit structural changes separately.
+8. We will then add another test for the next small increment of functionality.
+9. We will then repeat until the feature is complete, committing behavioral changes separately from structural ones.
+
+## Notes
+
+Always follow the instructions in `tasks/plan.md`.
+
+If `--auto-continue` is set, the agent will automatically continue to the next step when the current step is complete. If not set, the agent will wait for the user to say "go" before continuing.
+
+If `--from-file` is set, the agent will use the file to add to the context.
+
+If `--prompt` is set, the agent will use the prompt to add to the context.
+
+The general pattern is to find the next unmarked test in `tasks/plan.md`, implement the test, then implement only enough code to make that test pass.
 
 # ROLE AND EXPERTISE
 
